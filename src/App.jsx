@@ -6,11 +6,13 @@ import Services from "./components/Services";
 import Crops from "./components/Crops";
 import BlockchainLedger from "./components/BlockchainLedger";
 import AIAdvisor from "./components/AIAdvisor";
+import FarmerProfile from "./components/FarmerProfile";
 
 const TABS = [
   { id: "dashboard",  label: "Dashboard",  icon: "🏠" },
   { id: "services",   label: "Services",   icon: "⚡" },
   { id: "crops",      label: "My Crops",   icon: "🌾" },
+  { id: "profile",    label: "নিবন্ধন",    icon: "📋" },
   { id: "blockchain", label: "Ledger",     icon: "🔗" },
   { id: "advisor",    label: "AI Advisor", icon: "🤖" },
 ];
@@ -112,6 +114,7 @@ export default function App() {
         {tab === "dashboard"  && <Dashboard />}
         {tab === "services"   && <Services />}
         {tab === "crops"      && <Crops />}
+        {tab === "profile"    && <FarmerProfile />}
         {tab === "blockchain" && <BlockchainLedger />}
         {tab === "advisor"    && <AIAdvisor />}
       </main>
