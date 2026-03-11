@@ -25,7 +25,7 @@ function WeatherBar({ data }) {
 }
 
 const STATS = [
-  { label: "Total Land", value: FARMER.land, sub: "Own + Sharecrop", icon: "🗺️", color: "#0284c7" },
+  { label: "Total Land", value: `${FARMER.totalLand} dec`, sub: "Own + Sharecrop", icon: "🗺️", color: "#0284c7" },
   { label: "Active Season", value: "Rabi 2025", sub: "4 crops registered", icon: "🌾", color: "#16a34a" },
   { label: "Subsidy Balance", value: FARMER.subsidyBalance, sub: "Fertilizer & seed", icon: "💰", color: "#9333ea" },
   { label: "Insurance", value: "Active", sub: "Crop + Health", icon: "🛡️", color: "#ea580c" },

@@ -1,20 +1,64 @@
-// ─── Farmer profile (demo) ───────────────────────────────────────────────────
+// ─── Farmer profile (demo) — all 33 fields from DAE Electronic Profile ────────
 export const FARMER = {
+  // ── Identity (Fields 01–10) ──────────────────────────────────────────────
   name: "Md. Abul Rahman",
   nameBn: "মোঃ আবুল রহমান",
-  district: "Munshiganj",
-  division: "Dhaka",
-  upazila: "Sirajdikhan",
+  guardianName: "মোঃ আব্দুল করিম (পিতা)",
+  gender: "পুরুষ",
+  address: {
+    division: "ঢাকা", district: "মুন্সীগঞ্জ", upazila: "সিরাজদিখান",
+    union: "রাজানগর", block: "ব্লক-০৩", village: "পূর্বগ্রাম",
+  },
   nid: "19**-****-3241",
-  cardNo: "8801 4523 9017",
-  land: "187 dec",
+  dob: "১৫ মার্চ ১৯৭৮",
+  age: "৪৭",
+  education: "মাধ্যমিক (SSC)",
+  otherOccupation: "না",
+  mobile: "017**-***678",
+  // ── Family & Geography (Fields 11–12) ────────────────────────────────────
+  familyMembers: "৫",
+  gps: "23.5204° N, 90.4272° E",
+  // ── Land (Fields 13–20) ──────────────────────────────────────────────────
+  totalLand: "১৮৭",
+  landOwnership: { mouza: "রাজানগর", dag: "৪৫২, ৪৫৩", khatian: "২১৮" },
+  cultivableLand: "১৬৫",
   category: "Small Farmer",
   categoryBn: "ক্ষুদ্র কৃষক",
+  sharecropTaken: "৩০",
+  sharecropGiven: "০",
+  crops: { robi: "সরিষা, মসুর ডাল", kharif1: "আউশ ধান, পাট", kharif2: "আমন ধান, কলা" },
+  orchard: "২৫ শতাংশ",
+  // ── Inputs & Finance (Fields 21–27) ─────────────────────────────────────
+  fertilizers: "ইউরিয়া, টিএসপি, এমওপি, জৈব সার",
+  seedSource: "BADC ও স্থানীয় বাজার",
+  irrigationType: "অগভীর নলকূপ (STW)",
+  incentive: "২০২৪-২৫ রবি মৌসুম",
+  loan: "৳ 25,000 (মৌসুমী)",
+  insurance: "শস্য বীমা (ধান)",
+  warehouse: "হ্যাঁ — উপজেলা গুদাম",
+  // ── Fisheries & Livestock (Fields 28–31) ─────────────────────────────────
+  pondCount: "২",
+  pondArea: "৪৫ শতাংশ",
+  fishArea: "৪০ শতাংশ",
+  livestock: "২টি গরু, ৫টি ছাগল",
+  farmCount: "১",
+  // ── Verification (Fields 32–33) ──────────────────────────────────────────
+  signatureVerified: true,
+  biometricVerified: true,
+  // ── Card meta ────────────────────────────────────────────────────────────
+  cardNo: "1234 5678 9017",
+  validThru: "01/28",
+  uniqueId: "KC-DAE-2025-04523",
+  issuedBy: "কৃষি সম্প্রসারণ অধিদপ্তর (DAE)",
+  tagline: "স্বপ্ন নয় বাস্তবতা এক সঙ্গে",
   balance: "৳ 12,450",
   loanDue: "৳ 8,200",
   subsidyBalance: "৳ 4,800",
-  phone: "01712-XXXXXX",
-  gps: "23.5204° N, 90.4272° E",
+  district: "Munshiganj",
+  division: "Dhaka",
+  upazila: "Sirajdikhan",
+  land: "187",
+  phone: "017**-***678",
 };
 
 // ─── Pilot locations from concept paper ──────────────────────────────────────

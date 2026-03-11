@@ -85,10 +85,10 @@ export default function App() {
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: 24, border: "2px solid rgba(255,255,255,0.12)", flexShrink: 0 }}>👨‍🌾</div>
             <div>
-              <div style={{ fontSize: 17, fontWeight: 700 }}>{FARMER.name}</div>
-              <div style={{ fontSize: 12, color: "#6ee7b7", opacity: 0.85 }}>{FARMER.nameBn}</div>
+              <div style={{ fontSize: 17, fontWeight: 700 }}>{FARMER.nameBn}</div>
+              <div style={{ fontSize: 12, color: "#6ee7b7", opacity: 0.85 }}>{FARMER.name}</div>
               <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 3 }}>
-                {FARMER.upazila} · {FARMER.district} · {FARMER.category} · {FARMER.land}
+                {FARMER.address?.upazila} · {FARMER.address?.district} · {FARMER.categoryBn} · {FARMER.totalLand} শতাংশ
               </div>
             </div>
           </div>
