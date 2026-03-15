@@ -5,7 +5,7 @@ import Dashboard from "./components/Dashboard";
 import Services from "./components/Services";
 import MarketPrices from "./components/MarketPrices";
 import Crops from "./components/Crops";
-import BlockchainLedger from "./components/BlockchainLedger";
+import { BlockchainLedger } from "./components/BlockchainLedger";
 import AIAdvisor from "./components/AIAdvisor";
 import FarmerProfile from "./components/FarmerProfile";
 

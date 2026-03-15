@@ -1,6 +1,5 @@
 /**
  * Vercel Serverless Function — Secure Claude API Proxy
- * Keeps ANTHROPIC_API_KEY server-side, never exposed to the browser.
  *
  * POST /api/chat
  * Body: { messages: [...], system?: string }

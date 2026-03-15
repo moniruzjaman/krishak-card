@@ -4,49 +4,49 @@ const BN = { fontFamily: "'Noto Serif Bengali', 'Hind Siliguri', serif" };
 const UI = { fontFamily: "'Hind Siliguri', 'Noto Serif Bengali', sans-serif" };
 
 const DISTRICTS = [
-  { en: "Dhaka",      bn: "ঢাকা" },
+  { en: "Dhaka", bn: "ঢাকা" },
   { en: "Chittagong", bn: "চট্টগ্রাম" },
-  { en: "Rajshahi",   bn: "রাজশাহী" },
-  { en: "Khulna",     bn: "খুলনা" },
-  { en: "Rangpur",    bn: "রংপুর" },
-  { en: "Sylhet",     bn: "সিলেট" },
-  { en: "Barisal",    bn: "বরিশাল" },
+  { en: "Rajshahi", bn: "রাজশাহী" },
+  { en: "Khulna", bn: "খুলনা" },
+  { en: "Rangpur", bn: "রংপুর" },
+  { en: "Sylhet", bn: "সিলেট" },
+  { en: "Barisal", bn: "বরিশাল" },
 ];
 
 const CATEGORY_COLORS = {
   "ধান/চাল": { bg: "rgba(22,163,74,0.12)", border: "rgba(22,163,74,0.3)", text: "#4ade80" },
-  "সবজি":    { bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.25)", text: "#34d399" },
-  "ডাল":     { bg: "rgba(124,58,237,0.1)", border: "rgba(124,58,237,0.25)", text: "#a78bfa" },
-  "তেল":     { bg: "rgba(234,88,12,0.1)",  border: "rgba(234,88,12,0.25)",  text: "#fb923c" },
-  "মাংস":    { bg: "rgba(220,38,38,0.1)",  border: "rgba(220,38,38,0.25)",  text: "#f87171" },
-  "মাছ":     { bg: "rgba(8,145,178,0.1)",  border: "rgba(8,145,178,0.25)",  text: "#22d3ee" },
-  "ফল":      { bg: "rgba(234,179,8,0.1)",  border: "rgba(234,179,8,0.25)",  text: "#fbbf24" },
-  "গম":      { bg: "rgba(180,83,9,0.1)",   border: "rgba(180,83,9,0.25)",   text: "#f59e0b" },
-  "অন্যান্য":{ bg: "rgba(100,116,139,0.1)",border:"rgba(100,116,139,0.25)",text:"#94a3b8" },
+  "সবজি": { bg: "rgba(16,185,129,0.1)", border: "rgba(16,185,129,0.25)", text: "#34d399" },
+  "ডাল": { bg: "rgba(124,58,237,0.1)", border: "rgba(124,58,237,0.25)", text: "#a78bfa" },
+  "তেল": { bg: "rgba(234,88,12,0.1)", border: "rgba(234,88,12,0.25)", text: "#fb923c" },
+  "মাংস": { bg: "rgba(220,38,38,0.1)", border: "rgba(220,38,38,0.25)", text: "#f87171" },
+  "মাছ": { bg: "rgba(8,145,178,0.1)", border: "rgba(8,145,178,0.25)", text: "#22d3ee" },
+  "ফল": { bg: "rgba(234,179,8,0.1)", border: "rgba(234,179,8,0.25)", text: "#fbbf24" },
+  "গম": { bg: "rgba(180,83,9,0.1)", border: "rgba(180,83,9,0.25)", text: "#f59e0b" },
+  "অন্যান্য": { bg: "rgba(100,116,139,0.1)", border: "rgba(100,116,139,0.25)", text: "#94a3b8" },
 };
 
 const FALLBACK = [
-  { nameBn:"মোটা চাল",  nameEn:"Coarse Rice",  unit:"কেজি", min:52,  max:56,  category:"ধান/চাল" },
-  { nameBn:"মাঝারি চাল",nameEn:"Medium Rice",  unit:"কেজি", min:62,  max:68,  category:"ধান/চাল" },
-  { nameBn:"সরু চাল",   nameEn:"Fine Rice",    unit:"কেজি", min:70,  max:78,  category:"ধান/চাল" },
-  { nameBn:"আটা",       nameEn:"Wheat Flour",  unit:"কেজি", min:48,  max:55,  category:"গম" },
-  { nameBn:"আলু",       nameEn:"Potato",       unit:"কেজি", min:28,  max:35,  category:"সবজি" },
-  { nameBn:"পেঁয়াজ",   nameEn:"Onion",        unit:"কেজি", min:55,  max:70,  category:"সবজি" },
-  { nameBn:"রসুন",      nameEn:"Garlic",       unit:"কেজি", min:110, max:140, category:"সবজি" },
-  { nameBn:"টমেটো",    nameEn:"Tomato",       unit:"কেজি", min:40,  max:65,  category:"সবজি" },
-  { nameBn:"বেগুন",    nameEn:"Brinjal",      unit:"কেজি", min:40,  max:70,  category:"সবজি" },
-  { nameBn:"মসুর ডাল", nameEn:"Red Lentil",   unit:"কেজি", min:110, max:130, category:"ডাল" },
-  { nameBn:"মুগ ডাল",  nameEn:"Mung Dal",     unit:"কেজি", min:130, max:155, category:"ডাল" },
-  { nameBn:"সয়াবিন তেল",nameEn:"Soybean Oil", unit:"লিটার",min:155, max:168, category:"তেল" },
-  { nameBn:"পাম তেল",  nameEn:"Palm Oil",     unit:"লিটার",min:130, max:145, category:"তেল" },
-  { nameBn:"ব্রয়লার মুরগি",nameEn:"Broiler",  unit:"কেজি", min:170, max:195, category:"মাংস" },
-  { nameBn:"গরুর মাংস",nameEn:"Beef",         unit:"কেজি", min:680, max:750, category:"মাংস" },
-  { nameBn:"ইলিশ মাছ", nameEn:"Hilsha Fish",  unit:"কেজি", min:1200,max:1600,category:"মাছ" },
-  { nameBn:"রুই মাছ",  nameEn:"Rui Fish",     unit:"কেজি", min:280, max:350, category:"মাছ" },
-  { nameBn:"কাতলা মাছ",nameEn:"Katla Fish",   unit:"কেজি", min:260, max:320, category:"মাছ" },
-  { nameBn:"কলা",      nameEn:"Banana",       unit:"ডজন",  min:60,  max:90,  category:"ফল" },
-  { nameBn:"চিনি",     nameEn:"Sugar",        unit:"কেজি", min:118, max:128, category:"অন্যান্য" },
-  { nameBn:"লবণ",      nameEn:"Salt",         unit:"কেজি", min:30,  max:38,  category:"অন্যান্য" },
+  { nameBn: "মোটা চাল", nameEn: "Coarse Rice", unit: "কেজি", min: 52, max: 56, category: "ধান/চাল" },
+  { nameBn: "মাঝারি চাল", nameEn: "Medium Rice", unit: "কেজি", min: 62, max: 68, category: "ধান/চাল" },
+  { nameBn: "সরু চাল", nameEn: "Fine Rice", unit: "কেজি", min: 70, max: 78, category: "ধান/চাল" },
+  { nameBn: "আটা", nameEn: "Wheat Flour", unit: "কেজি", min: 48, max: 55, category: "গম" },
+  { nameBn: "আলু", nameEn: "Potato", unit: "কেজি", min: 28, max: 35, category: "সবজি" },
+  { nameBn: "পেঁয়াজ", nameEn: "Onion", unit: "কেজি", min: 55, max: 70, category: "সবজি" },
+  { nameBn: "রসুন", nameEn: "Garlic", unit: "কেজি", min: 110, max: 140, category: "সবজি" },
+  { nameBn: "টমেটো", nameEn: "Tomato", unit: "কেজি", min: 40, max: 65, category: "সবজি" },
+  { nameBn: "বেগুন", nameEn: "Brinjal", unit: "কেজি", min: 40, max: 70, category: "সবজি" },
+  { nameBn: "মসুর ডাল", nameEn: "Red Lentil", unit: "কেজি", min: 110, max: 130, category: "ডাল" },
+  { nameBn: "মুগ ডাল", nameEn: "Mung Dal", unit: "কেজি", min: 130, max: 155, category: "ডাল" },
+  { nameBn: "সয়াবিন তেল", nameEn: "Soybean Oil", unit: "লিটার", min: 155, max: 168, category: "তেল" },
+  { nameBn: "পাম তেল", nameEn: "Palm Oil", unit: "লিটার", min: 130, max: 145, category: "তেল" },
+  { nameBn: "ব্রয়লার মুরগি", nameEn: "Broiler", unit: "কেজি", min: 170, max: 195, category: "মাংস" },
+  { nameBn: "গরুর মাংস", nameEn: "Beef", unit: "কেজি", min: 680, max: 750, category: "মাংস" },
+  { nameBn: "ইলিশ মাছ", nameEn: "Hilsha Fish", unit: "কেজি", min: 1200, max: 1600, category: "মাছ" },
+  { nameBn: "রুই মাছ", nameEn: "Rui Fish", unit: "কেজি", min: 280, max: 350, category: "মাছ" },
+  { nameBn: "কাতলা মাছ", nameEn: "Katla Fish", unit: "কেজি", min: 260, max: 320, category: "মাছ" },
+  { nameBn: "কলা", nameEn: "Banana", unit: "ডজন", min: 60, max: 90, category: "ফল" },
+  { nameBn: "চিনি", nameEn: "Sugar", unit: "কেজি", min: 118, max: 128, category: "অন্যান্য" },
+  { nameBn: "লবণ", nameEn: "Salt", unit: "কেজি", min: 30, max: 38, category: "অন্যান্য" },
 ];
 
 function PriceTag({ value, unit }) {
@@ -69,18 +69,16 @@ export default function MarketPrices() {
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("সব");
   const [lastFetch, setLastFetch] = useState(null);
-  const [error, setError] = useState(null);
 
   const fetch_prices = useCallback(async (d) => {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch(`/api/market-prices?district=${d}`);
       if (!res.ok) throw new Error("API error");
       const json = await res.json();
       setData(json);
       setLastFetch(new Date());
-    } catch (e) {
+    } catch {
       // If API fails entirely, use hardcoded fallback
       setData({
         source: "offline",
@@ -89,7 +87,6 @@ export default function MarketPrices() {
         note: "সার্ভার সংযোগ করা যাচ্ছে না। সর্বশেষ পরিচিত মূল্য দেখানো হচ্ছে।",
         prices: FALLBACK.map(p => ({ ...p, district: d })),
       });
-      setError("DAM সার্ভার সাময়িকভাবে অনুপলব্ধ");
       setLastFetch(new Date());
     } finally {
       setLoading(false);
@@ -117,7 +114,8 @@ export default function MarketPrices() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 10 }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <div style={{ width: 8, height: 8, borderRadius: "50%", background: data?.source === "live" ? "#4ade80" : "#f59e0b",
+              <div style={{
+                width: 8, height: 8, borderRadius: "50%", background: data?.source === "live" ? "#4ade80" : "#f59e0b",
                 boxShadow: data?.source === "live" ? "0 0 6px #4ade80" : "none",
                 animation: loading ? "pulse 1s infinite" : "none",
               }} />

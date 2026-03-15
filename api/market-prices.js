@@ -88,7 +88,6 @@ export default async function handler(req, res) {
     const colIdx = colMap[district] ?? 3;
 
     const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
-    const cellRegex = /<td[^>]*>([\s\S]*?)<\/td>/gi;
     const prices = [];
 
     let rowMatch;

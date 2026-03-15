@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export const Inp = ({ label, value, onChange, type="text", placeholder, options, required }) => (
   <div>
     <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
