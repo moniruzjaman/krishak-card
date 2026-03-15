@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { CROPS } from "../data";
+import { Modal } from "./ui";
 
 const STATUS_STYLE = {
   healthy: { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)", color: "#6ee7b7", label: "✓ সুস্থ" },
@@ -9,6 +10,7 @@ const STATUS_STYLE = {
 
 export default function Crops() {
   const [expanded, setExpanded] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   return (
     <div style={{ animation: "fadeUp 0.3s ease" }}>
@@ -23,7 +25,8 @@ export default function Crops() {
         }}>
           <div style={{ fontSize: 14, fontWeight: 700 }}>নিবন্ধিত ফসল — মৌসুম ২০২৫</div>
           <div style={{ fontSize: 12, color: "#6ee7b7", cursor: "pointer", padding: "4px 10px",
-            background: "rgba(16,185,129,0.1)", borderRadius: 20, border: "1px solid rgba(16,185,129,0.25)" }}>
+            background: "rgba(16,185,129,0.1)", borderRadius: 20, border: "1px solid rgba(16,185,129,0.25)" }}
+            onClick={() => setModalOpen(true)}>
             + নতুন নিবন্ধন
           </div>
         </div>
@@ -96,6 +99,18 @@ export default function Crops() {
       <div style={{ fontSize: 11, color: "#475569", marginTop: 10, textAlign: "center" }}>
         একটি সারি ট্যাপ করে ফসলের বিস্তারিত তথ্য দেখুন · ডেটা BARI ও DAE মাঠ থেকে সিঙ্ক করা হয়েছে
       </div>
+
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title="নতুন ফসল নিবন্ধন">
+        <p style={{ marginBottom: "12px" }}>আপনার জমিতে চাষ করা নতুন ফসল নিবন্ধন করতে নিচের তথ্য প্রদান করুন:</p>
+        <ul style={{ paddingLeft: "20px", margin: 0 }}>
+          <li style={{ marginBottom: "8px" }}>ফসলের নাম ও জাত</li>
+          <li style={{ marginBottom: "8px" }}>আবাদের তারিখ</li>
+          <li style={{ marginBottom: "8px" }}>জমির পরিমাণ</li>
+          <li style={{ marginBottom: "8px" }}>প্রত্যাশিত ফলন</li>
+          <li style={{ marginBottom: "8px" }}>সেচ ও সারের তথ্য</li>
+        </ul>
+        <p style={{ marginTop: "12px", color: "#94a3b8" }}>উপজেলা কৃষি অফিসে যোগাযোগ করে আবেদন করুন।</p>
+      </Modal>
     </div>
   );
 }
