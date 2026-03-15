@@ -58,9 +58,9 @@ export const PhysicalCard = ({ p, flipped, onFlip }) => {
             <div className="flex justify-between items-center">
               <div>
                 <div className="text-amber-300 font-black text-sm">সেবাসমূহ</div>
-                <div className="text-slate-400 text-[9px]">10 Active Services</div>
+                <div className="text-slate-400 text-[9px]">১০টি সক্রিয় সেবা</div>
               </div>
-              <div className="text-emerald-400 text-xs font-bold border border-emerald-700 px-2 py-1 rounded-lg">✓ Blockchain Verified</div>
+              <div className="text-emerald-400 text-xs font-bold border border-emerald-700 px-2 py-1 rounded-lg">✓ ব্লকচেইন যাচাইকৃত</div>
             </div>
             <div className="grid grid-cols-5 gap-1">
               {SERVICES.map(s=>(

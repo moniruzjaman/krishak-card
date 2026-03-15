@@ -136,7 +136,7 @@ export default function AIAdvisor() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleAsk()}
-          placeholder="Ask about your crops, pests, subsidies… (English or বাংলা)"
+          placeholder="আপনার ফসল, কীট, ভর্তুকি সম্পর্কে জানুন… (English or বাংলা)"
           disabled={loading}
           style={{
             flex: 1, background: "rgba(255,255,255,0.05)",

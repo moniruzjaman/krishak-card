@@ -229,7 +229,7 @@ export default function FarmersCard({ onClose }) {
           textAlign: "center", fontSize: 10, color: "#475569",
           letterSpacing: 3, textTransform: "uppercase",
         }}>
-          ▲ সামনের দিক — Front Face
+          ▲ সামনের দিক — সামনের পাতা
         </div>
 
         {/* ══════════════════════════════════════
@@ -292,7 +292,7 @@ export default function FarmersCard({ onClose }) {
                     ...UI, fontSize: 9.5, letterSpacing: 4.5,
                     opacity: 0.7, marginTop: 4, fontWeight: 600,
                   }}>
-                    FARMERS CARD
+                    কৃষক কার্ড
                   </div>
                 </div>
               </div>
@@ -340,7 +340,7 @@ export default function FarmersCard({ onClose }) {
                 boxShadow: "0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
               }}>
                 <div style={{ fontSize: 26 }}>👨‍🌾</div>
-                <div style={{ ...MONO, fontSize: 7, opacity: 0.38, letterSpacing: 1 }}>PHOTO</div>
+                <div style={{ ...MONO, fontSize: 7, opacity: 0.38, letterSpacing: 1 }}>ছবি</div>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ ...BN, fontSize: 16, fontWeight: 700, marginBottom: 2 }}>
@@ -375,7 +375,7 @@ export default function FarmersCard({ onClose }) {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
               <div>
                 <div style={{ ...MONO, fontSize: 7.5, opacity: 0.42, letterSpacing: 1.5, marginBottom: 2 }}>
-                  VALID THRU
+                  বৈধতার মেয়াদ
                 </div>
                 <div style={{ ...MONO, fontSize: 14, fontWeight: 700 }}>
                   {FARMER.validThru}
@@ -426,7 +426,7 @@ export default function FarmersCard({ onClose }) {
           textAlign: "center", fontSize: 10, color: "#475569",
           letterSpacing: 3, textTransform: "uppercase", marginTop: 2,
         }}>
-          ▼ পিছনের দিক — Back Face · Electronic Profile
+          ▼ পিছনের দিক — পেছনের পাতা · ইলেকট্রনিক প্রোফাইল
         </div>
 
         {/* ══════════════════════════════════════
@@ -451,7 +451,7 @@ export default function FarmersCard({ onClose }) {
                 কৃষকের ইলেকট্রনিক প্রোফাইল
               </div>
               <div style={{ ...UI, fontSize: 10, color: "#64748b", marginTop: 2 }}>
-                Electronic Farmer Profile · তথ্য সংগৃহীত: BBS, DAE ও সরেজমিন মাঠ
+                কৃষকের ইলেকট্রনিক প্রোফাইল · তথ্য সংগৃহীত: BBS, DAE ও সরেজমিন মাঠ
               </div>
             </div>
             <div style={{ textAlign: "right" }}>

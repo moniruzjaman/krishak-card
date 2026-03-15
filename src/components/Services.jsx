@@ -20,8 +20,8 @@ export default function Services() {
           কৃষক কার্ডের মাধ্যমে প্রাপ্ত সেবাসমূহ
         </div>
         <div style={{ ...UI, fontSize: 12, color: "#64748b", lineHeight: 1.6 }}>
-          Services available through your Farmers Card — all {SERVICES.length} services evaluated from the DAE Concept Paper.
-          No middlemen · No cash handling · সরাসরি কৃষকের কাছে সুবিধা।
+          কৃষক কার্ডের মাধ্যমে সকল সরকারি ও আর্থিক সেবা পান — DAE ধারণাপত্র থেকে মূল্যায়ন করা হয়েছে।
+          কোনো দালাল নয় · কোনো নগদ লেনদেন নয় · সরাসরি কৃষকের কাছে সুবিধা।
         </div>
       </div>
 
@@ -55,9 +55,6 @@ export default function Services() {
                   <div>
                     <div style={{ ...BN, fontSize: 13, fontWeight: 700, color: "#f1f5f9", lineHeight: 1.3 }}>
                       {s.label}
-                    </div>
-                    <div style={{ ...UI, fontSize: 10, color: "#64748b", marginTop: 1 }}>
-                      {s.labelEn}
                     </div>
                   </div>
                 </div>
