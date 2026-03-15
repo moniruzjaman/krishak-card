@@ -25,18 +25,18 @@ function WeatherBar({ data }) {
 }
 
 const STATS = [
-  { label: "Total Land", value: `${FARMER.totalLand} dec`, sub: "Own + Sharecrop", icon: "🗺️", color: "#0284c7" },
-  { label: "Active Season", value: "Rabi 2025", sub: "4 crops registered", icon: "🌾", color: "#16a34a" },
-  { label: "Subsidy Balance", value: FARMER.subsidyBalance, sub: "Fertilizer & seed", icon: "💰", color: "#9333ea" },
-  { label: "Insurance", value: "Active", sub: "Crop + Health", icon: "🛡️", color: "#ea580c" },
+  { label: "মোট জমি", value: FARMER.totalLand + " শ.", sub: "নিজ + বর্গা", icon: "🗺️", color: "#0284c7" },
+  { label: "চলমান মৌসুম", value: "রবি ২০২৫", sub: "৪টি ফসল নিবন্ধিত", icon: "🌾", color: "#16a34a" },
+  { label: "ভর্তুকি ব্যালেন্স", value: FARMER.subsidyBalance, sub: "সার ও বীজ", icon: "💰", color: "#9333ea" },
+  { label: "বীমা", value: "সক্রিয়", sub: "ফসল + স্বাস্থ্য", icon: "🛡️", color: "#ea580c" },
 ];
 
 const QUICK_ACTIONS = [
-  { label: "Apply for seasonal crop loan", color: "#0284c7" },
-  { label: "Claim natural disaster relief", color: "#dc2626" },
-  { label: "Register a new crop", color: "#16a34a" },
-  { label: "Check live market prices", color: "#9333ea" },
-  { label: "Book machinery (tractor hire)", color: "#ea580c" },
+  { label: "মৌসুমী ঋণের জন্য আবেদন", color: "#0284c7" },
+  { label: "প্রাকৃতিক দুর্যোগে ত্রাণ দাবি", color: "#dc2626" },
+  { label: "নতুন ফসল নিবন্ধন", color: "#16a34a" },
+  { label: "সরাসরি বাজার মূল্য দেখুন", color: "#9333ea" },
+  { label: "যন্ত্রপাতি বুকিং (ট্র্যাক্টর)", color: "#ea580c" },
 ];
 
 export default function Dashboard() {
@@ -66,7 +66,7 @@ export default function Dashboard() {
           borderRadius: 14, padding: 18,
         }}>
           <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 14, fontWeight: 600 }}>
-            🌧 7-Day Rainfall Forecast (mm)
+            🌧 ৭ দিনের বৃষ্টিপূর্ণাঙ্ক পূর্বাভাস (মিমি)
           </div>
           <WeatherBar data={WEATHER} />
           {heavyRainDay && (
@@ -75,7 +75,7 @@ export default function Dashboard() {
               background: "rgba(251,191,36,0.08)", borderRadius: 6,
               padding: "6px 10px", border: "1px solid rgba(251,191,36,0.2)",
             }}>
-              ⚠ Heavy rain expected {heavyRainDay.day} ({heavyRainDay.rain}mm) — delay irrigation & secure nursery beds
+              ⚠ {heavyRainDay.day} তে ভারী বৃষ্টি ({heavyRainDay.rain}মিমি) প্রত্যাশিত — সেচ স্থগিত ও নার্সারি সুরক্ষিত করুন
             </div>
           )}
         </div>
@@ -85,7 +85,7 @@ export default function Dashboard() {
           background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)",
           borderRadius: 14, padding: 18,
         }}>
-          <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 14, fontWeight: 600 }}>⚡ Quick Actions</div>
+          <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 14, fontWeight: 600 }}>⚡ দ্রুত পদক্ষেপ</div>
           {QUICK_ACTIONS.map((a, i) => (
             <div key={i} style={{
               background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "9px 12px",
