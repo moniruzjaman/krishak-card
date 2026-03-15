@@ -2,9 +2,9 @@ import { useState } from "react";
 import { CROPS } from "../data";
 
 const STATUS_STYLE = {
-  healthy: { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)", color: "#6ee7b7", label: "✓ Healthy" },
-  alert:   { bg: "rgba(239,68,68,0.12)",  border: "rgba(239,68,68,0.3)",  color: "#fca5a5", label: "⚠ Alert"   },
-  warning: { bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.3)", color: "#fcd34d", label: "! Warning"  },
+  healthy: { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)", color: "#6ee7b7", label: "✓ সুস্থ" },
+  alert:   { bg: "rgba(239,68,68,0.12)",  border: "rgba(239,68,68,0.3)",  color: "#fca5a5", label: "⚠ সতর্কতা"   },
+  warning: { bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.3)", color: "#fcd34d", label: "! সতর্ক"  },
 };
 
 export default function Crops() {
@@ -21,10 +21,10 @@ export default function Crops() {
           padding: "14px 18px", borderBottom: "1px solid rgba(255,255,255,0.07)",
           display: "flex", justifyContent: "space-between", alignItems: "center",
         }}>
-          <div style={{ fontSize: 14, fontWeight: 700 }}>Registered Crops — Season 2025</div>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>নিবন্ধিত ফসল — মৌসুম ২০২৫</div>
           <div style={{ fontSize: 12, color: "#6ee7b7", cursor: "pointer", padding: "4px 10px",
             background: "rgba(16,185,129,0.1)", borderRadius: 20, border: "1px solid rgba(16,185,129,0.25)" }}>
-            + Register New
+            + নতুন নিবন্ধন
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export default function Crops() {
                     fontSize: 11, fontWeight: 600,
                     background: st.bg, color: st.color, border: `1px solid ${st.border}`,
                   }}>{st.label}</div>
-                  <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 4 }}>{c.yieldEst} q/ha est.</div>
+                  <div style={{ fontSize: 13, color: "#94a3b8", marginTop: 4 }}>{c.yieldEst} কুইন্টাল/হেক্টর প্রাক্কলন</div>
                 </div>
               </div>
 
@@ -71,12 +71,12 @@ export default function Crops() {
                   display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8,
                 }}>
                   {[
-                    ["Fertilizer", c.fertilizer],
-                    ["Irrigation", c.irrigation],
-                    ["Pest Risk", c.pestRisk],
-                    ["Insurance", c.insurance],
-                    ["Loan", c.loan],
-                    ["Market Price", c.marketPrice],
+                    ["সার", c.fertilizer],
+                    ["সেচ", c.irrigation],
+                    ["কীট আক্রমণ", c.pestRisk],
+                    ["বীমা", c.insurance],
+                    ["ঋণ", c.loan],
+                    ["বাজার মূল্য", c.marketPrice],
                   ].map(([k, v], j) => (
                     <div key={j} style={{
                       background: "rgba(0,0,0,0.25)", borderRadius: 8, padding: "8px 10px",
@@ -94,7 +94,7 @@ export default function Crops() {
       </div>
 
       <div style={{ fontSize: 11, color: "#475569", marginTop: 10, textAlign: "center" }}>
-        Tap a row to expand crop details · Data synced from BARI &amp; DAE field records
+        একটি সারি ট্যাপ করে ফসলের বিস্তারিত তথ্য দেখুন · ডেটা BARI ও DAE মাঠ থেকে সিঙ্ক করা হয়েছে
       </div>
     </div>
   );

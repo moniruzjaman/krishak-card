@@ -36,15 +36,15 @@ export default function AIAdvisor() {
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <div style={{ fontSize: 30 }}>🤖</div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 15 }}>AI Agricultural Advisor</div>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>AI কৃষি উপদেষ্টা</div>
             <div style={{ fontSize: 12, color: "#6ee7b7", marginTop: 2 }}>
-              Powered by Claude (Anthropic) · কৃষি পরামর্শদাতা
+              Claude (Anthropic) দ্বারা পরিচালিত · কৃষি পরামর্শদাতা
             </div>
           </div>
         </div>
         <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 10, lineHeight: 1.5 }}>
-          Ask about crop diseases, fertilizer doses, IPM, government schemes, market timing, and weather-based management.
-          Responses follow DAE Bangladesh guidelines.
+          ফসলের রোগ, সারের মাত্রা, IPM, সরকারি প্রকল্প, বাজার সময় এবং আবহাওয়া-ভিত্তিক ব্যবস্থাপনা সম্পর্কে জানুন।
+          প্রতিক্রিয়া DAE বাংলাদেশ নির্দেশিকা অনুসরণ করে।
         </div>
       </div>
 
@@ -166,3 +166,4 @@ export default function AIAdvisor() {
     </div>
   );
 }
+
