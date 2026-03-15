@@ -1,11 +1,19 @@
 import { useState } from "react";
 import { SERVICES } from "../data";
+import { Modal } from "./ui";
 
 const BN = { fontFamily: "'Noto Serif Bengali', 'Hind Siliguri', serif" };
 const UI = { fontFamily: "'Hind Siliguri', 'Noto Serif Bengali', sans-serif" };
 
 export default function Services() {
   const [active, setActive] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+
+  const handleApply = (service) => {
+    setSelectedService(service);
+    setModalOpen(true);
+  };
 
   return (
     <div style={{ animation: "fadeUp 0.3s ease" }}>
@@ -90,13 +98,13 @@ export default function Services() {
                       </span>
                     ))}
                   </div>
-                  <button style={{
+                  <button onClick={() => handleApply(s)} style={{
                     marginTop: 12, width: "100%", padding: "8px",
                     background: s.accent, border: `1px solid ${s.color}55`,
                     borderRadius: 8, color: s.color, fontSize: 12, fontWeight: 600,
                     cursor: "pointer", ...UI,
                   }}>
-                    আবেদন করুন / Apply →
+                    আবেদন করুন →
                   </button>
                 </div>
               )}
@@ -115,6 +123,22 @@ export default function Services() {
         কৃষক কার্ড তৈরী, বিতরণ ও সেবা প্রদান বিষয়ক পাইলট প্রকল্প — কৃষি সম্প্রসারণ অধিদপ্তর (DAE)।
         সেবার তালিকা PDF ধারণাপত্রের ৩–৪ পৃষ্ঠা থেকে সংকলিত।
       </div>
+
+      {selectedService && (
+        <Modal 
+          isOpen={modalOpen} 
+          onClose={() => setModalOpen(false)} 
+          title={selectedService.title}
+        >
+          <p style={{ marginBottom: "12px" }}>{selectedService.desc}</p>
+          <p style={{ marginBottom: "12px", color: "#94a3b8" }}>আবেদনের জন্য প্রয়োজনীয় নথিপত্র:</p>
+          <ul style={{ paddingLeft: "20px", margin: 0 }}>
+            {selectedService.steps.map((step, i) => (
+              <li key={i} style={{ marginBottom: "8px" }}>{step}</li>
+            ))}
+          </ul>
+        </Modal>
+      )}
     </div>
   );
 }

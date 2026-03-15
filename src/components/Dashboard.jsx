@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { FARMER, WEATHER } from "../data";
+import { Modal } from "./ui";
 
 function WeatherBar({ data }) {
   const maxRain = Math.max(...data.map((d) => d.rain));
@@ -32,15 +34,22 @@ const STATS = [
 ];
 
 const QUICK_ACTIONS = [
-  { label: "মৌসুমী ঋণের জন্য আবেদন", color: "#0284c7" },
-  { label: "প্রাকৃতিক দুর্যোগে ত্রাণ দাবি", color: "#dc2626" },
-  { label: "নতুন ফসল নিবন্ধন", color: "#16a34a" },
-  { label: "সরাসরি বাজার মূল্য দেখুন", color: "#9333ea" },
-  { label: "যন্ত্রপাতি বুকিং (ট্র্যাক্টর)", color: "#ea580c" },
+  { label: "মৌসুমী ঋণের জন্য আবেদন", color: "#0284c7", title: "মৌসুমী ঋণ", details: "কৃষক কার্ডের মাধ্যমে আপনি সহজ শর্তে কৃষি ঋণ পেতে পারেন। ব্যাংক থেকে ৫০,০০০ থেকে ৩,০০,০০০ টাকা পর্যন্ত ঋণ পাওয়া যায়। প্রক্রিয়া সম্পূর্ণ ডিজিটাল।" },
+  { label: "প্রাকৃতিক দুর্যোগে ত্রাণ দাবি", color: "#dc2626", title: "দুর্যোগ ত্রাণ", details: "বন্যা, ঘূর্ণিঝড় বা অন্যান্য প্রাকৃতিক দুর্যোগে ক্ষতিগ্রস্ত কৃষকরা সরকারি ত্রাণ পেতে পারেন। আবেদন অনলাইনে জমা করুন।" },
+  { label: "নতুন ফসল নিবন্ধন", color: "#16a34a", title: "ফসল নিবন্ধন", details: "আপনার জমিতে চাষ করা ফসল নিবন্ধন করুন। এতে সরকারি ভর্তুকি ও প্রণোদনা পেতে সুবিধা হবে।" },
+  { label: "সরাসরি বাজার মূল্য দেখুন", color: "#9333ea", title: "বাজার মূল্য", details: "DAM পোর্টাল থেকে সরাসরি আজকের পাইকারি বাজার দেখুন। সবজি, ধান, ডাল, তেলসহ সকল পণ্যের দাম।" },
+  { label: "যন্ত্রপাতি বুকিং (ট্র্যাক্টর)", color: "#ea580c", title: "যন্ত্রপাতি ভর্তুকি", details: "ট্র্যাক্টর, হার্ভেস্টারসহ কৃষি যন্ত্রপাতি ভর্তুকিতে পান। উপজেলা কৃষি অফিসে আবেদন করুন।" },
 ];
 
 export default function Dashboard() {
   const heavyRainDay = WEATHER.find((d) => d.rain > 35);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(null);
+
+  const openAction = (action) => {
+    setSelectedAction(action);
+    setModalOpen(true);
+  };
 
   return (
     <div style={{ animation: "fadeUp 0.3s ease" }}>
@@ -87,12 +96,15 @@ export default function Dashboard() {
         }}>
           <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 14, fontWeight: 600 }}>⚡ দ্রুত পদক্ষেপ</div>
           {QUICK_ACTIONS.map((a, i) => (
-            <div key={i} style={{
+            <div key={i} onClick={() => openAction(a)} style={{
               background: "rgba(255,255,255,0.04)", borderRadius: 8, padding: "9px 12px",
               marginBottom: 8, fontSize: 13, cursor: "pointer", display: "flex",
               alignItems: "center", gap: 8, border: "1px solid rgba(255,255,255,0.06)",
               transition: "background 0.2s",
-            }}>
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.08)"}
+            onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
+            >
               <div style={{ width: 7, height: 7, borderRadius: "50%", background: a.color, flexShrink: 0 }} />
               {a.label}
               <span style={{ marginLeft: "auto", opacity: 0.35, fontSize: 11 }}>→</span>
@@ -100,6 +112,11 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+      {selectedAction && (
+        <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={selectedAction.title}>
+          {selectedAction.details}
+        </Modal>
+      )}
     </div>
   );
 }
