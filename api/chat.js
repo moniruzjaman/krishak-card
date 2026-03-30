@@ -14,9 +14,10 @@ export default async function handler(req, res) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // Use VITE_OPENAI_API_KEY from environment or process.env directly
+  const apiKey = process.env.VITE_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: "ANTHROPIC_API_KEY is not configured on the server." });
+    return res.status(500).json({ error: "OPENAI_API_KEY is not configured on the server." });
   }
 
   const { messages, system } = req.body;
@@ -24,19 +25,23 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "messages array is required" });
   }
 
+  const openAiMessages = [];
+  if (system) {
+    openAiMessages.push({ role: "system", content: system });
+  }
+  openAiMessages.push(...messages);
+
   try {
-    const upstream = await fetch("https://api.anthropic.com/v1/messages", {
+    const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001", // fast + affordable for advisory queries
-        max_tokens: 1024,
-        system: system || "",
-        messages,
+        model: "gpt-4o-mini", // fast + affordable 
+        temperature: 0.7,
+        messages: openAiMessages,
       }),
     });
 
@@ -46,10 +51,10 @@ export default async function handler(req, res) {
     }
 
     const data = await upstream.json();
-    const text = data.content?.map((b) => (b.type === "text" ? b.text : "")).join("") || "";
+    const text = data.choices[0]?.message?.content || "";
     return res.status(200).json({ text });
   } catch (err) {
-    console.error("Claude proxy error:", err);
+    console.error("OpenAI proxy error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 }
