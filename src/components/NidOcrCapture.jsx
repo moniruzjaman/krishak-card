@@ -82,24 +82,42 @@ export default function NidOcrCapture({ onDataExtracted }) {
     setError(null);
 
     try {
-      // In a real implementation: Send FormData with blob
-      // For this mock, we just trigger the endpoint
-      const response = await fetch('/api/nid-ocr', {
+      const Tesseract = (await import('tesseract.js')).default;
+      
+      // 1. Client-side OCR parsing with Tesseract
+      const { data: { text } } = await Tesseract.recognize(
+        imageCaptured,
+        'ben+eng',
+      );
+
+      // 2. Pass OCR text to AI for structured parsing
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ image: imageCaptured }) // sending base64
+        body: JSON.stringify({ 
+          system: `You are an AI that extracts variables from messy Bangladeshi NID card OCR text.
+Extract these exactly as JSON (leave null if missing):
+- name (Bangla name)
+- dob (YYYY-MM-DD or parseable dob)
+- nid (10, 13, or 17 digit ID)
+- address (object with: village, upazila, district)
+Return ONLY raw JSON, no markdown formatting.`,
+          messages: [{ role: 'user', content: text }]
+        })
       });
 
-      const result = await response.json();
+      if (!response.ok) throw new Error('AI parsing failed');
+      const { text: jsonStr } = await response.json();
+      const parsed = JSON.parse(jsonStr);
       
-      if (result.success && result.data) {
-        onDataExtracted(result.data);
+      if (parsed) {
+        onDataExtracted(parsed);
         setIsActive(false);
         setImageCaptured(null);
       } else {
-        throw new Error(result.message || 'Processing failed');
+        throw new Error('Processing failed');
       }
     } catch (err) {
       console.error('OCR Error:', err);

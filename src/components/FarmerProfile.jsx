@@ -1,5 +1,6 @@
 import { useState } from "react";
 import NidOcrCapture from "./NidOcrCapture";
+import VoiceAutoFill from "./VoiceAutoFill";
 // ─── Quick-fill demo profiles ─────────────────────────────────────────────────
 const DEMO_PROFILES = {
   small: {
@@ -291,6 +292,16 @@ export default function FarmerProfile() {
     }));
   }
 
+  function handleVoiceFill(data) {
+    setForm(f => {
+      const merged = { ...f };
+      Object.keys(data).forEach(k => {
+        if (data[k]) merged[k] = data[k];
+      });
+      return merged;
+    });
+  }
+
   function handleSubmit() {
     const uid = `KC-${form.district?.slice(0,2).toUpperCase() || "XX"}-${Date.now().toString().slice(-6)}`;
     setSubmitted({ ...form, uid, submittedAt: new Date().toLocaleString("bn-BD") });
@@ -393,6 +404,8 @@ export default function FarmerProfile() {
       </div>
 
       <ProgressBar filled={filledCount} total={totalFields} />
+      
+      <VoiceAutoFill onFill={handleVoiceFill} />
 
       {/* ── Section 1: Personal ── */}
       <SectionCard
