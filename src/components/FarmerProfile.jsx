@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import NidOcrCapture from "./NidOcrCapture";
 // ─── Quick-fill demo profiles ─────────────────────────────────────────────────
 const DEMO_PROFILES = {
   small: {
@@ -277,6 +277,20 @@ export default function FarmerProfile() {
     setSignatureDone(true);
   }
 
+  function handleOcrData(data) {
+    setForm(f => ({
+      ...f,
+      name: data.name || f.name,
+      dob: data.dob || f.dob,
+      nid: data.nid || f.nid,
+      division: data.address?.division || f.division,
+      district: data.address?.district || f.district,
+      upazila: data.address?.upazila || f.upazila,
+      union: data.address?.municipality || data.address?.postOffice || f.union,
+      village: data.address?.village || f.village,
+    }));
+  }
+
   function handleSubmit() {
     const uid = `KC-${form.district?.slice(0,2).toUpperCase() || "XX"}-${Date.now().toString().slice(-6)}`;
     setSubmitted({ ...form, uid, submittedAt: new Date().toLocaleString("bn-BD") });
@@ -387,6 +401,8 @@ export default function FarmerProfile() {
         onToggle={() => setActiveSection(activeSection === 1 ? null : 1)}
         isComplete={!!(form.name && form.nid && form.mobile && form.division)}
       >
+        <NidOcrCapture onDataExtracted={handleOcrData} />
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
           <Field labelBn="কৃষক/কৃষাণীর নাম" label="Full Name" required>
             <Input value={form.name} onChange={set("name")} placeholder="বাংলায় পূর্ণ নাম লিখুন" />
