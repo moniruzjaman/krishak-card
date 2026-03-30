@@ -248,16 +248,16 @@ Context about the farmer you are assisting:
 
 Guidelines:
 - Be concise and practical — farmers need actionable steps, not textbooks
-- Respond in English but include Bengali crop/chemical names in parentheses where helpful
+- ALWAYS respond fully in natural conversational BENGALI (বাংলা) language. Never English.
 - Always recommend consulting the local Sub-Assistant Agriculture Officer (SAAO) for field verification
 - Do not recommend banned pesticides or practices that violate Bangladesh DAE policy
 - Keep responses under 200 words unless the question requires more detail`;
 
 export const SUGGESTED_QUESTIONS = [
-  "Best fertilizer dose for late boro rice?",
-  "My banana leaves have yellow-brown spots",
-  "When should I sell potatoes for best price?",
-  "How do I apply for the Krishok Card crop loan?",
-  "Signs of blast disease in maize?",
-  "How to reduce irrigation cost during dry season?",
+  "দেরিতে রোপণ করা বোরো ধানের জন্য সারের মাত্রা কত?",
+  "আমার কলা পাতায় হলুদ-বাদামী দাগ দেখা যাচ্ছে",
+  "সবচেয়ে ভালো দামে আলু কখন বিক্রি করা উচিত?",
+  "কৃষক কার্ডের শস্য ঋণের জন্য কীভাবে আবেদন করব?",
+  "ভুট্টার ব্লাস্ট রোগের লক্ষণ কী কী?",
+  "শুষ্ক মৌসুমে সেচ খরচ কীভাবে কমানো যায়?",
 ];

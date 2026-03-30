@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import NidOcrCapture from "./NidOcrCapture";
 import VoiceAutoFill from "./VoiceAutoFill";
+import SignatureCanvas from "react-signature-canvas";
+import Webcam from "react-webcam";
 // ─── Quick-fill demo profiles ─────────────────────────────────────────────────
 const DEMO_PROFILES = {
   small: {
@@ -264,6 +266,47 @@ export default function FarmerProfile() {
   const [biometric, setBiometric] = useState(false);
   const [photoTaken, setPhotoTaken] = useState(false);
   const [signatureDone, setSignatureDone] = useState(false);
+
+  const sigCanvas = useRef(null);
+  const webcamRef = useRef(null);
+  const [showSigCanvas, setShowSigCanvas] = useState(false);
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [showFingerprint, setShowFingerprint] = useState(false);
+  const [fingerProgress, setFingerProgress] = useState(0);
+
+  const capturePhoto = useCallback(() => {
+    if (webcamRef.current) {
+      const img = webcamRef.current.getScreenshot();
+      if (img) {
+        setPhotoTaken(true);
+        setShowWebcam(false);
+      }
+    }
+  }, [webcamRef]);
+
+  const saveSignature = () => {
+    if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
+      setSignatureDone(true);
+      setShowSigCanvas(false);
+    }
+  };
+
+  const startFingerprintScan = () => {
+    setShowFingerprint(true);
+    setFingerProgress(0);
+    const interval = setInterval(() => {
+      setFingerProgress(p => {
+        if (p >= 100) {
+          clearInterval(interval);
+          setBiometric(true);
+          setTimeout(() => setShowFingerprint(false), 500);
+          return 100;
+        }
+        return p + 20;
+      });
+    }, 400);
+  };
+
 
   const set = (field) => (val) => setForm((f) => ({ ...f, [field]: val }));
 
@@ -638,18 +681,33 @@ export default function FarmerProfile() {
             background: "rgba(0,0,0,0.25)", borderRadius: 12, padding: 16, textAlign: "center",
             border: signatureDone ? "1px solid rgba(16,185,129,0.4)" : "1px solid rgba(255,255,255,0.08)",
           }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>✍️</div>
-            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>কৃষকের স্বাক্ষর</div>
-            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Farmer Signature</div>
-            <button
-              onClick={() => setSignatureDone(true)}
-              style={{
-                background: signatureDone ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.08)",
-                border: signatureDone ? "1px solid rgba(16,185,129,0.4)" : "1px solid rgba(255,255,255,0.1)",
-                color: signatureDone ? "#6ee7b7" : "#94a3b8",
-                borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 12,
-              }}
-            >{signatureDone ? "✓ স্বাক্ষর সম্পন্ন" : "স্বাক্ষর করুন"}</button>
+            {!showSigCanvas && !signatureDone ? (
+              <>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>✍️</div>
+                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>কৃষকের স্বাক্ষর</div>
+                <div style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Farmer Signature</div>
+                <button
+                  onClick={() => setShowSigCanvas(true)}
+                  style={{
+                    background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", color: "#94a3b8", borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 12,
+                  }}
+                >স্বাক্ষর করুন</button>
+              </>
+            ) : showSigCanvas ? (
+              <div style={{ background: "white", borderRadius: 8, padding: 4 }}>
+                <SignatureCanvas ref={sigCanvas} penColor="black" canvasProps={{ width: 200, height: 100, className: 'sigCanvas' }} />
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <button onClick={() => sigCanvas.current.clear()} style={{ flex: 1, padding: 4, fontSize: 11 }}>মুছুন</button>
+                  <button onClick={saveSignature} style={{ flex: 1, padding: 4, background: "#16a34a", color: "white", border: "none", borderRadius: 4, fontSize: 11 }}>সংরক্ষণ</button>
+                </div>
+              </div>
+            ) : (
+                <>
+                  <div style={{ fontSize: 28, marginBottom: 8 }}>✅</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#6ee7b7", marginBottom: 16 }}>স্বাক্ষর সম্পন্ন</div>
+                  <button onClick={() => { setSignatureDone(false); setShowSigCanvas(true); }} style={{ background: "transparent", border: "1px solid rgba(16,185,16,0.3)", color: "#6ee7b7", borderRadius: 8, padding: "4px 8px", fontSize: 11, cursor: "pointer" }}>পরিবর্তন করুন</button>
+                </>
+            )}
           </div>
 
           {/* Biometric */}
@@ -657,18 +715,32 @@ export default function FarmerProfile() {
             background: "rgba(0,0,0,0.25)", borderRadius: 12, padding: 16, textAlign: "center",
             border: biometric ? "1px solid rgba(16,185,129,0.4)" : "1px solid rgba(255,255,255,0.08)",
           }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>👆</div>
-            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>বায়োমেট্রিক ফিঙ্গারপ্রিন্ট</div>
-            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Fingerprint Scan</div>
-            <button
-              onClick={() => setBiometric(true)}
-              style={{
-                background: biometric ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.08)",
-                border: biometric ? "1px solid rgba(16,185,129,0.4)" : "1px solid rgba(255,255,255,0.1)",
-                color: biometric ? "#6ee7b7" : "#94a3b8",
-                borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 12,
-              }}
-            >{biometric ? "✓ স্ক্যান সম্পন্ন" : "আঙুল স্ক্যান করুন"}</button>
+            {!showFingerprint && !biometric ? (
+              <>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>👆</div>
+                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>বায়োমেট্রিক ফিঙ্গারপ্রিন্ট</div>
+                <div style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Fingerprint Scan</div>
+                <button
+                  onClick={startFingerprintScan}
+                  style={{
+                    background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", color: "#94a3b8", borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 12,
+                  }}
+                >আঙুল স্ক্যান করুন</button>
+              </>
+            ) : showFingerprint ? (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div style={{ fontSize: 32, animation: "pulse 1s infinite" }}>🖐️</div>
+                <div style={{ fontSize: 11, color: "#e2e8f0", marginTop: 8 }}>স্ক্যান হচ্ছে...</div>
+                <div style={{ width: "100%", height: 4, background: "rgba(255,255,255,0.1)", marginTop: 8, borderRadius: 4, overflow: "hidden" }}>
+                  <div style={{ height: "100%", width: `${fingerProgress}%`, background: "#10b981", transition: "width 0.3s" }}></div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>✅</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#6ee7b7", marginBottom: 16 }}>স্ক্যান সম্পন্ন</div>
+              </>
+            )}
           </div>
 
           {/* Photo */}
@@ -676,18 +748,33 @@ export default function FarmerProfile() {
             background: "rgba(0,0,0,0.25)", borderRadius: 12, padding: 16, textAlign: "center",
             border: photoTaken ? "1px solid rgba(16,185,129,0.4)" : "1px solid rgba(255,255,255,0.08)",
           }}>
-            <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
-            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>কৃষকের ছবি</div>
-            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Passport Photo</div>
-            <button
-              onClick={() => setPhotoTaken(true)}
-              style={{
-                background: photoTaken ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.08)",
-                border: photoTaken ? "1px solid rgba(16,185,129,0.4)" : "1px solid rgba(255,255,255,0.1)",
-                color: photoTaken ? "#6ee7b7" : "#94a3b8",
-                borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 12,
-              }}
-            >{photoTaken ? "✓ ছবি তোলা হয়েছে" : "ছবি তুলুন"}</button>
+            {!showWebcam && !photoTaken ? (
+              <>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
+                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>কৃষকের ছবি</div>
+                <div style={{ fontSize: 11, color: "#64748b", marginBottom: 12 }}>Passport Photo</div>
+                <button
+                  onClick={() => setShowWebcam(true)}
+                  style={{
+                    background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.1)", color: "#94a3b8", borderRadius: 8, padding: "7px 14px", cursor: "pointer", fontSize: 12,
+                  }}
+                >ছবি তুলুন</button>
+              </>
+            ) : showWebcam ? (
+              <div style={{ borderRadius: 8, overflow: "hidden" }}>
+                <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" width="100%" videoConstraints={{ facingMode: "user" }} />
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <button onClick={() => setShowWebcam(false)} style={{ flex: 1, padding: 4, fontSize: 11 }}>বাতিল</button>
+                  <button onClick={capturePhoto} style={{ flex: 1, padding: 4, background: "#0284c7", color: "white", border: "none", borderRadius: 4, fontSize: 11 }}>SNAP</button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div style={{ fontSize: 28, marginBottom: 8 }}>✅</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#6ee7b7", marginBottom: 16 }}>ছবি তোলা হয়েছে</div>
+                <button onClick={() => { setPhotoTaken(false); setShowWebcam(true); }} style={{ background: "transparent", border: "1px solid rgba(16,185,16,0.3)", color: "#6ee7b7", borderRadius: 8, padding: "4px 8px", fontSize: 11, cursor: "pointer" }}>পরিবর্তন করুন</button>
+              </>
+            )}
           </div>
         </div>
 
