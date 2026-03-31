@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import NidOcrCapture from "./NidOcrCapture";
 import VoiceAutoFill from "./VoiceAutoFill";
 import SignatureCanvas from "react-signature-canvas";
