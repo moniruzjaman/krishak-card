@@ -3,6 +3,7 @@ import NidOcrCapture from "./NidOcrCapture";
 import VoiceAutoFill from "./VoiceAutoFill";
 import SignatureCanvas from "react-signature-canvas";
 import Webcam from "react-webcam";
+import { getConfidenceLevel } from "../lib/ocrConfidence";
 // ─── Quick-fill demo profiles ─────────────────────────────────────────────────
 const DEMO_PROFILES = {
   small: {
@@ -111,17 +112,80 @@ const EMPTY = Object.fromEntries(
   Object.keys(DEMO_PROFILES.small).map((k) => [k, ""])
 );
 
+// ─── Phase 0: Address auto-fill + intelligent defaults ───────────────────────
+const ADDRESS_CARRY_FIELDS = ["division", "district", "upazila", "union", "block", "village", "mouza"];
+const DEFAULT_CARRY_FIELDS = ["farmerCategory", "education", "otherOccupation"];
+const CARRY_FIELDS = [...ADDRESS_CARRY_FIELDS, ...DEFAULT_CARRY_FIELDS];
+const LAST_SESSION_KEY = "krishak_card_last_session_v1";
+
+function loadLastSession() {
+  try {
+    const raw = localStorage.getItem(LAST_SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveLastSession(form) {
+  try {
+    const snapshot = Object.fromEntries(CARRY_FIELDS.map((k) => [k, form[k] || ""]));
+    localStorage.setItem(LAST_SESSION_KEY, JSON.stringify(snapshot));
+  } catch {
+    // localStorage unavailable (private mode etc.) — carry-over simply won't persist
+  }
+}
+
+function buildInitialForm() {
+  const last = loadLastSession();
+  if (!last) return { form: EMPTY, carried: new Set() };
+  const form = { ...EMPTY };
+  const carried = new Set();
+  CARRY_FIELDS.forEach((k) => {
+    if (last[k]) {
+      form[k] = last[k];
+      carried.add(k);
+    }
+  });
+  return { form, carried };
+}
+
 // ─── Reusable field components ────────────────────────────────────────────────
-function Field({ label, labelBn, hint, children, required }) {
+const CONFIDENCE_DOT = { green: "🟢", yellow: "🟡", red: "🔴" };
+const CONFIDENCE_RING = {
+  green: "none",
+  yellow: "0 0 0 2px rgba(234,179,8,0.35)",
+  red: "0 0 0 2px rgba(239,68,68,0.5)",
+};
+const CONFIDENCE_LABEL = {
+  green: "OCR নির্ভরযোগ্য (>৯৫%)",
+  yellow: "একবার চোখ বুলিয়ে দেখুন (৮০-৯৫%)",
+  red: "ম্যানুয়ালি যাচাই/সংশোধন করুন (<৮০%)",
+};
+
+function Field({ label, labelBn, hint, children, required, carried, confidence }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       <label style={{ fontSize: 11, color: "#94a3b8", display: "flex", gap: 4, alignItems: "center" }}>
         <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{labelBn}</span>
         <span style={{ color: "#64748b" }}>/ {label}</span>
         {required && <span style={{ color: "#f87171" }}>*</span>}
+        {carried && (
+          <span title="আগের নিবন্ধন থেকে স্বয়ংক্রিয়ভাবে পূরণ হয়েছে" style={{
+            background: "rgba(56,189,248,0.15)", color: "#7dd3fc", borderRadius: 8,
+            padding: "1px 6px", fontSize: 9, fontWeight: 700, marginLeft: 2,
+          }}>AUTO</span>
+        )}
+        {confidence && (
+          <span title={`${CONFIDENCE_LABEL[confidence.level]} — স্কোর ${confidence.score}%`} style={{ fontSize: 11 }}>
+            {CONFIDENCE_DOT[confidence.level]}
+          </span>
+        )}
       </label>
       {hint && <div style={{ fontSize: 10, color: "#64748b", marginTop: -2 }}>{hint}</div>}
-      {children}
+      <div style={{ borderRadius: 8, boxShadow: confidence ? CONFIDENCE_RING[confidence.level] : "none" }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -260,7 +324,9 @@ function ProgressBar({ filled, total }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function FarmerProfile() {
-  const [form, setForm] = useState(EMPTY);
+  const [form, setForm] = useState(() => buildInitialForm().form);
+  const [carriedFields, setCarriedFields] = useState(() => buildInitialForm().carried);
+  const [ocrConfidence, setOcrConfidence] = useState({}); // { fieldName: { score, level } }
   const [activeSection, setActiveSection] = useState(1);
   const [submitted, setSubmitted] = useState(false);
   const [biometric, setBiometric] = useState(false);
@@ -308,7 +374,36 @@ export default function FarmerProfile() {
   };
 
 
-  const set = (field) => (val) => setForm((f) => ({ ...f, [field]: val }));
+  const set = (field) => (val) => {
+    setForm((f) => ({ ...f, [field]: val }));
+    // Once the officer touches a carried-over field, it's their edit now — drop the AUTO badge.
+    setCarriedFields((c) => {
+      if (!c.has(field)) return c;
+      const next = new Set(c);
+      next.delete(field);
+      return next;
+    });
+    // Same idea for OCR confidence dots — a human-edited value doesn't need flagging anymore.
+    setOcrConfidence((c) => {
+      if (!(field in c)) return c;
+      const next = { ...c };
+      delete next[field];
+      return next;
+    });
+  };
+
+  function clearAddressPrefill() {
+    setForm((f) => {
+      const next = { ...f };
+      ADDRESS_CARRY_FIELDS.forEach((k) => { next[k] = ""; });
+      return next;
+    });
+    setCarriedFields((c) => {
+      const next = new Set(c);
+      ADDRESS_CARRY_FIELDS.forEach((k) => next.delete(k));
+      return next;
+    });
+  }
 
   const filledCount = Object.values(form).filter((v) => v && v.trim() !== "").length +
     (biometric ? 1 : 0) + (photoTaken ? 1 : 0) + (signatureDone ? 1 : 0);
@@ -321,7 +416,7 @@ export default function FarmerProfile() {
     setSignatureDone(true);
   }
 
-  function handleOcrData(data) {
+  function handleOcrData(data, confidenceMap = {}) {
     setForm(f => ({
       ...f,
       name: data.name || f.name,
@@ -333,6 +428,14 @@ export default function FarmerProfile() {
       union: data.address?.municipality || data.address?.postOffice || f.union,
       village: data.address?.village || f.village,
     }));
+    setOcrConfidence(c => {
+      const next = { ...c };
+      Object.entries(confidenceMap).forEach(([key, score]) => {
+        if (score == null) return;
+        next[key] = { score, level: getConfidenceLevel(score) };
+      });
+      return next;
+    });
   }
 
   function handleVoiceFill(data) {
@@ -347,6 +450,7 @@ export default function FarmerProfile() {
 
   function handleSubmit() {
     const uid = `KC-${form.district?.slice(0,2).toUpperCase() || "XX"}-${Date.now().toString().slice(-6)}`;
+    saveLastSession(form);
     setSubmitted({ ...form, uid, submittedAt: new Date().toLocaleString("bn-BD") });
   }
 
@@ -401,7 +505,13 @@ export default function FarmerProfile() {
         </div>
 
         <button
-          onClick={() => { setForm(EMPTY); setSubmitted(false); setBiometric(false); setPhotoTaken(false); setSignatureDone(false); setActiveSection(1); }}
+          onClick={() => {
+            const { form: nextForm, carried } = buildInitialForm();
+            setForm(nextForm);
+            setCarriedFields(carried);
+            setOcrConfidence({});
+            setSubmitted(false); setBiometric(false); setPhotoTaken(false); setSignatureDone(false); setActiveSection(1);
+          }}
           style={{
             width: "100%", background: "#065f46", border: "1px solid rgba(16,185,129,0.3)",
             color: "#6ee7b7", borderRadius: 12, padding: "12px", cursor: "pointer",
@@ -439,12 +549,33 @@ export default function FarmerProfile() {
             background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.3)",
             color: "#c4b5fd", borderRadius: 20, padding: "5px 14px", cursor: "pointer", fontSize: 12,
           }}>ভূমিহীন কৃষাণী (নমুনা)</button>
-          <button onClick={() => { setForm(EMPTY); setBiometric(false); setPhotoTaken(false); setSignatureDone(false); }} style={{
+          <button onClick={() => { setForm(EMPTY); setCarriedFields(new Set()); setOcrConfidence({}); setBiometric(false); setPhotoTaken(false); setSignatureDone(false); }} style={{
             background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)",
             color: "#fca5a5", borderRadius: 20, padding: "5px 14px", cursor: "pointer", fontSize: 12,
           }}>ফর্ম পরিষ্কার করুন</button>
         </div>
       </div>
+
+      {carriedFields.size > 0 && (
+        <div style={{
+          display: "flex", justifyContent: "space-between", alignItems: "center", gap: 10,
+          background: "rgba(56,189,248,0.08)", border: "1px solid rgba(56,189,248,0.25)",
+          borderRadius: 12, padding: "10px 16px", marginBottom: 14, fontSize: 12, color: "#7dd3fc",
+        }}>
+          <div>
+            📍 আগের নিবন্ধন থেকে ঠিকানা ও কিছু তথ্য স্বয়ংক্রিয়ভাবে পূরণ হয়েছে
+            {form.village ? ` — ${form.village}, ${form.upazila}` : ""}। শুধু "AUTO" চিহ্নিত ঘরগুলো যাচাই করুন।
+          </div>
+          <button
+            onClick={clearAddressPrefill}
+            style={{
+              background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)",
+              color: "#e2e8f0", borderRadius: 8, padding: "5px 10px", cursor: "pointer",
+              fontSize: 11, whiteSpace: "nowrap",
+            }}
+          >নতুন গ্রাম — মুছে ফেলুন</button>
+        </div>
+      )}
 
       <ProgressBar filled={filledCount} total={totalFields} />
       
@@ -460,7 +591,7 @@ export default function FarmerProfile() {
         <NidOcrCapture onDataExtracted={handleOcrData} />
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-          <Field labelBn="কৃষক/কৃষাণীর নাম" label="Full Name" required>
+          <Field labelBn="কৃষক/কৃষাণীর নাম" label="Full Name" required confidence={ocrConfidence.name}>
             <Input value={form.name} onChange={set("name")} placeholder="বাংলায় পূর্ণ নাম লিখুন" />
           </Field>
           <Field labelBn="পিতা/মাতা/স্বামী/স্ত্রীর নাম" label="Guardian Name" required>
@@ -469,16 +600,16 @@ export default function FarmerProfile() {
           <Field labelBn="লিঙ্গ" label="Gender" required>
             <Select value={form.gender} onChange={set("gender")} options={["পুরুষ", "মহিলা", "অন্যান্য"]} />
           </Field>
-          <Field labelBn="জাতীয় পরিচয়পত্র নম্বর" label="NID Number" required hint="১৩ বা ১৭ সংখ্যার এনআইডি">
+          <Field labelBn="জাতীয় পরিচয়পত্র নম্বর" label="NID Number" required hint="১৩ বা ১৭ সংখ্যার এনআইডি" confidence={ocrConfidence.nid}>
             <Input value={form.nid} onChange={set("nid")} placeholder="NID নম্বর" />
           </Field>
-          <Field labelBn="জন্ম তারিখ" label="Date of Birth" required>
+          <Field labelBn="জন্ম তারিখ" label="Date of Birth" required confidence={ocrConfidence.dob}>
             <Input value={form.dob} onChange={set("dob")} type="date" placeholder="" />
           </Field>
           <Field labelBn="বর্তমান বয়স" label="Age">
             <Input value={form.age} onChange={set("age")} placeholder="বছর" />
           </Field>
-          <Field labelBn="শিক্ষাগত যোগ্যতা" label="Education">
+          <Field labelBn="শিক্ষাগত যোগ্যতা" label="Education" carried={carriedFields.has("education")}>
             <Select value={form.education} onChange={set("education")} options={["নিরক্ষর", "প্রাথমিক", "মাধ্যমিক (SSC)", "উচ্চ মাধ্যমিক (HSC)", "স্নাতক ও তদূর্ধ্ব"]} />
           </Field>
           <Field labelBn="মোবাইল নম্বর" label="Mobile" required hint="সক্রিয় মোবাইল নম্বর">
@@ -488,28 +619,28 @@ export default function FarmerProfile() {
 
         <div style={{ marginTop: 12, fontSize: 12, color: "#94a3b8", fontWeight: 600, marginBottom: 8 }}>ঠিকানা (Address)</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
-          <Field labelBn="বিভাগ" label="Division" required>
+          <Field labelBn="বিভাগ" label="Division" required carried={carriedFields.has("division")} confidence={ocrConfidence.division}>
             <Select value={form.division} onChange={set("division")} options={["ঢাকা","চট্টগ্রাম","রাজশাহী","খুলনা","বরিশাল","সিলেট","রংপুর","ময়মনসিংহ"]} />
           </Field>
-          <Field labelBn="জেলা" label="District" required>
+          <Field labelBn="জেলা" label="District" required carried={carriedFields.has("district")} confidence={ocrConfidence.district}>
             <Input value={form.district} onChange={set("district")} placeholder="জেলার নাম" />
           </Field>
-          <Field labelBn="উপজেলা" label="Upazila" required>
+          <Field labelBn="উপজেলা" label="Upazila" required carried={carriedFields.has("upazila")} confidence={ocrConfidence.upazila}>
             <Input value={form.upazila} onChange={set("upazila")} placeholder="উপজেলার নাম" />
           </Field>
-          <Field labelBn="ইউনিয়ন/পৌরসভা" label="Union/Municipality">
+          <Field labelBn="ইউনিয়ন/পৌরসভা" label="Union/Municipality" carried={carriedFields.has("union")} confidence={ocrConfidence.union}>
             <Input value={form.union} onChange={set("union")} placeholder="ইউনিয়নের নাম" />
           </Field>
-          <Field labelBn="ব্লক" label="Block">
+          <Field labelBn="ব্লক" label="Block" carried={carriedFields.has("block")}>
             <Input value={form.block} onChange={set("block")} placeholder="ব্লক নম্বর/নাম" />
           </Field>
-          <Field labelBn="গ্রাম/মহল্লা" label="Village/Ward">
+          <Field labelBn="গ্রাম/মহল্লা" label="Village/Ward" carried={carriedFields.has("village")} confidence={ocrConfidence.village}>
             <Input value={form.village} onChange={set("village")} placeholder="গ্রামের নাম" />
           </Field>
         </div>
 
         <div style={{ marginTop: 12 }}>
-          <Field labelBn="অন্যান্য পেশা" label="Other Occupation" hint="কৃষি ছাড়া অন্য পেশায় যুক্ত কি না">
+          <Field labelBn="অন্যান্য পেশা" label="Other Occupation" hint="কৃষি ছাড়া অন্য পেশায় যুক্ত কি না" carried={carriedFields.has("otherOccupation")}>
             <Select value={form.otherOccupation} onChange={set("otherOccupation")} options={["না", "হ্যাঁ — দিনমজুর", "হ্যাঁ — ব্যবসা", "হ্যাঁ — গৃহকর্মী", "হ্যাঁ — অন্যান্য"]} />
           </Field>
         </div>
@@ -567,7 +698,7 @@ export default function FarmerProfile() {
           <Field labelBn="মোট জমির পরিমাণ" label="Total Land (decimal)" required>
             <Input value={form.totalLand} onChange={set("totalLand")} placeholder="শতাংশ" />
           </Field>
-          <Field labelBn="মৌজার নাম" label="Mouza">
+          <Field labelBn="মৌজার নাম" label="Mouza" carried={carriedFields.has("mouza")}>
             <Input value={form.mouza} onChange={set("mouza")} placeholder="মৌজা" />
           </Field>
           <Field labelBn="দাগ নম্বর" label="Dag Number">
@@ -579,7 +710,7 @@ export default function FarmerProfile() {
           <Field labelBn="মোট আবাদী জমি" label="Cultivable Land (decimal)" required>
             <Input value={form.cultivableLand} onChange={set("cultivableLand")} placeholder="শতাংশ" />
           </Field>
-          <Field labelBn="কৃষকের শ্রেণী" label="Farmer Category" required>
+          <Field labelBn="কৃষকের শ্রেণী" label="Farmer Category" required carried={carriedFields.has("farmerCategory")}>
             <Select value={form.farmerCategory} onChange={set("farmerCategory")} options={["ভূমিহীন", "প্রান্তিক কৃষক", "ক্ষুদ্র কৃষক", "মাঝারি কৃষক", "বড় কৃষক"]} />
           </Field>
           <Field labelBn="বর্গা নেওয়া জমি" label="Sharecrop Taken (decimal)" hint="অন্যের জমি বর্গা নিয়েছেন">
