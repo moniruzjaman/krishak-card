@@ -9,6 +9,7 @@ const DEMO_PROFILES = {
     // Section 1
     name: "মোঃ আবুল রহমান",
     guardianName: "মোঃ আব্দুল করিম",
+    motherName: "মোসাঃ রাবেয়া খাতুন",
     gender: "পুরুষ",
     nid: "1987456321098",
     dob: "1978-03-15",
@@ -56,6 +57,7 @@ const DEMO_PROFILES = {
   landless: {
     name: "মোসাম্মৎ রহিমা বেগম",
     guardianName: "মোঃ জহির উদ্দিন (স্বামী)",
+    motherName: "মোসাঃ আমেনা বেগম",
     gender: "মহিলা",
     nid: "2001789456123",
     dob: "1985-07-20",
@@ -325,6 +327,8 @@ export default function FarmerProfile() {
     setForm(f => ({
       ...f,
       name: data.name || f.name,
+      guardianName: data.fatherName || f.guardianName,
+      motherName: data.motherName || f.motherName,
       dob: data.dob || f.dob,
       nid: data.nid || f.nid,
       division: data.address?.division || f.division,
@@ -384,6 +388,7 @@ export default function FarmerProfile() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {[
               ["নাম", submitted.name],
+              ["মাতার নাম", submitted.motherName],
               ["জাতীয় পরিচয়পত্র", submitted.nid],
               ["মোবাইল", submitted.mobile],
               ["জেলা/উপজেলা", `${submitted.district} / ${submitted.upazila}`],
@@ -465,6 +470,9 @@ export default function FarmerProfile() {
           </Field>
           <Field labelBn="পিতা/মাতা/স্বামী/স্ত্রীর নাম" label="Guardian Name" required>
             <Input value={form.guardianName} onChange={set("guardianName")} placeholder="সম্পর্ক সহ নাম" />
+          </Field>
+          <Field labelBn="মাতার নাম" label="Mother's Name" required>
+            <Input value={form.motherName} onChange={set("motherName")} placeholder="মাতার পূর্ণ নাম" />
           </Field>
           <Field labelBn="লিঙ্গ" label="Gender" required>
             <Select value={form.gender} onChange={set("gender")} options={["পুরুষ", "মহিলা", "অন্যান্য"]} />
